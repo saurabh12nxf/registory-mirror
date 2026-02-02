@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/saurabh12nxf/registry-mirror/internal/mirror"
+	"github.com/saurabh12nxf/registry-mirror/internal/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -35,11 +37,29 @@ func runSync(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("🔄 Syncing %s to %s...\n", image, registry)
 
+	// Init DB and Tracker
+	db, err := storage.NewDB()
+	if err != nil {
+		return fmt.Errorf("failed to init database: %w", err)
+	}
+	defer db.Close()
+
+	tracker := mirror.NewTracker(db)
+	start := time.Now()
+
 	syncer := mirror.NewSyncer(registry, parallel)
 
-	if err := syncer.Sync(image, force); err != nil {
+	err = syncer.Sync(image, force)
+	duration := time.Since(start)
+
+	if err != nil {
+		tracker.TrackSyncError(image, err)
 		return fmt.Errorf("sync failed: %w", err)
 	}
+
+	// Calculate total bytes (simplified, in real app we'd get this from syncer)
+	// For now we just track that it completed
+	tracker.TrackSyncComplete(image, 0, duration)
 
 	fmt.Printf("✅ Successfully synced %s\n", image)
 	return nil
