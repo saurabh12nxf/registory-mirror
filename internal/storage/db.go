@@ -65,6 +65,25 @@ func (db *DB) RecordSync(image, status string, bytes int64, duration float64) er
 	return err
 }
 
+func (db *DB) GetRecentSyncs(limit int) ([]SyncRecord, error) {
+	query := `SELECT id, image, status, bytes, duration, timestamp FROM syncs ORDER BY timestamp DESC LIMIT ?`
+	rows, err := db.conn.Query(query, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var records []SyncRecord
+	for rows.Next() {
+		var rec SyncRecord
+		if err := rows.Scan(&rec.ID, &rec.Image, &rec.Status, &rec.Bytes, &rec.Duration, &rec.Timestamp); err != nil {
+			return nil, err
+		}
+		records = append(records, rec)
+	}
+	return records, nil
+}
+
 func (db *DB) GetLatestSync(image string) (*SyncRecord, error) {
 	query := `SELECT id, image, status, bytes, duration, timestamp FROM syncs WHERE image = ? ORDER BY timestamp DESC LIMIT 1`
 	row := db.conn.QueryRow(query, image)
