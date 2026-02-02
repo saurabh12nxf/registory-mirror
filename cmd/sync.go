@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/saurabh12nxf/registry-mirror/internal/cache"
 	"github.com/saurabh12nxf/registry-mirror/internal/mirror"
 	"github.com/saurabh12nxf/registry-mirror/internal/storage"
 	"github.com/spf13/cobra"
@@ -58,9 +59,15 @@ func runSync(cmd *cobra.Command, args []string) error {
 	}
 
 	// Calculate total bytes (simplified, in real app we'd get this from syncer)
-	// For now we just track that it completed
 	tracker.TrackSyncComplete(image, 0, duration)
 
 	fmt.Printf("✅ Successfully synced %s\n", image)
+
+	// Check cache policy (Default: 10GB limit)
+	cacheMgr := cache.NewManager(db, 10000, cache.PolicyLRU)
+	if err := cacheMgr.EnforcePolicy(); err != nil {
+		fmt.Printf("⚠️  Cache policy check failed: %v\n", err)
+	}
+
 	return nil
 }
