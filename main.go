@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/yourusername/registry-mirror/cmd"
+	"github.com/saurabh12nxf/registry-mirror/cmd"
 )
 
 func main() {
