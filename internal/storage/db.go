@@ -98,6 +98,31 @@ func (db *DB) GetLatestSync(image string) (*SyncRecord, error) {
 	return &rec, nil
 }
 
+type AggregatedStats struct {
+	TotalCount    int
+	TotalBytes    int64
+	TotalDuration float64
+	UniqueImages  int
+}
+
+func (db *DB) GetAggregatedStats() (*AggregatedStats, error) {
+	query := `
+		SELECT 
+			COUNT(*) as total_count,
+			COALESCE(SUM(bytes), 0) as total_bytes,
+			COALESCE(SUM(duration), 0) as total_duration,
+			COUNT(DISTINCT image) as unique_images
+		FROM syncs 
+		WHERE status = 'completed'`
+
+	row := db.conn.QueryRow(query)
+	var stats AggregatedStats
+	if err := row.Scan(&stats.TotalCount, &stats.TotalBytes, &stats.TotalDuration, &stats.UniqueImages); err != nil {
+		return nil, err
+	}
+	return &stats, nil
+}
+
 func (db *DB) Close() error {
 	return db.conn.Close()
 }
