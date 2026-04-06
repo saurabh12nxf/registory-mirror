@@ -20,6 +20,7 @@ type ImageReference struct {
 	LineNumber int
 }
 
+// NewScanner creates a new Git repository scanner for the given path
 func NewScanner(repoPath string) *Scanner {
 	return &Scanner{
 		repoPath: repoPath,

@@ -27,7 +27,7 @@ var setPolicyCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		image := args[0]
-		
+
 		// Parse TTL
 		ttlDuration, err := parseDuration(ttlFlag)
 		if err != nil {

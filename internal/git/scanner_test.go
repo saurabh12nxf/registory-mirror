@@ -44,7 +44,7 @@ FROM redis:7-alpine
 
 	// Should find 3 images (node:18-alpine is skipped as it's a build stage with AS)
 	expectedImages := []string{"nginx:latest", "postgres:15", "redis:7-alpine"}
-	
+
 	if len(images) != len(expectedImages) {
 		t.Errorf("expected %d images, got %d", len(expectedImages), len(images))
 	}
@@ -92,7 +92,7 @@ spec:
 	}
 
 	expectedImages := map[string]bool{
-		"nginx:1.21":      true,
+		"nginx:1.21":     true,
 		"busybox:latest": true,
 	}
 
@@ -244,9 +244,9 @@ func TestScanRepositorySkipsGitDirectory(t *testing.T) {
 }
 
 func contains(s, substr string) bool {
-	return len(s) > 0 && len(substr) > 0 && 
-		(s == substr || len(s) >= len(substr) && 
-		(s[:len(substr)] == substr || contains(s[1:], substr)))
+	return len(s) > 0 && len(substr) > 0 &&
+		(s == substr || len(s) >= len(substr) &&
+			(s[:len(substr)] == substr || contains(s[1:], substr)))
 }
 
 func BenchmarkScanDockerfile(b *testing.B) {

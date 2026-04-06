@@ -11,6 +11,7 @@ type Tracker struct {
 	db *storage.DB
 }
 
+// NewTracker creates a new sync tracker with database connection
 func NewTracker(db *storage.DB) *Tracker {
 	return &Tracker{db: db}
 }

@@ -11,15 +11,15 @@ import (
 
 func TestNewClient(t *testing.T) {
 	client := NewClient("localhost:5000")
-	
+
 	if client == nil {
 		t.Fatal("expected non-nil client")
 	}
-	
+
 	if client.baseURL != "localhost:5000" {
 		t.Errorf("expected baseURL localhost:5000, got %s", client.baseURL)
 	}
-	
+
 	if client.httpClient == nil {
 		t.Error("expected non-nil httpClient")
 	}
@@ -78,7 +78,7 @@ func TestGetDockerHubToken(t *testing.T) {
 			defer authServer.Close()
 
 			client := NewClient("localhost:5000")
-			
+
 			// Note: This test validates the structure, actual implementation
 			// uses the real Docker Hub auth endpoint
 			ctx := context.Background()
@@ -103,39 +103,39 @@ func TestGetDockerHubToken(t *testing.T) {
 
 func TestImageNameParsing(t *testing.T) {
 	tests := []struct {
-		name          string
-		image         string
-		expectedName  string
-		expectedTag   string
-		needsLibrary  bool
+		name         string
+		image        string
+		expectedName string
+		expectedTag  string
+		needsLibrary bool
 	}{
 		{
-			name:          "official image with tag",
-			image:         "nginx:latest",
-			expectedName:  "nginx",
-			expectedTag:   "latest",
-			needsLibrary:  true,
+			name:         "official image with tag",
+			image:        "nginx:latest",
+			expectedName: "nginx",
+			expectedTag:  "latest",
+			needsLibrary: true,
 		},
 		{
-			name:          "official image without tag",
-			image:         "nginx",
-			expectedName:  "nginx",
-			expectedTag:   "latest",
-			needsLibrary:  true,
+			name:         "official image without tag",
+			image:        "nginx",
+			expectedName: "nginx",
+			expectedTag:  "latest",
+			needsLibrary: true,
 		},
 		{
-			name:          "user image",
-			image:         "user/myimage:v1.0",
-			expectedName:  "user/myimage",
-			expectedTag:   "v1.0",
-			needsLibrary:  false,
+			name:         "user image",
+			image:        "user/myimage:v1.0",
+			expectedName: "user/myimage",
+			expectedTag:  "v1.0",
+			needsLibrary: false,
 		},
 		{
-			name:          "organization image",
-			image:         "myorg/myapp:stable",
-			expectedName:  "myorg/myapp",
-			expectedTag:   "stable",
-			needsLibrary:  false,
+			name:         "organization image",
+			image:        "myorg/myapp:stable",
+			expectedName: "myorg/myapp",
+			expectedTag:  "stable",
+			needsLibrary: false,
 		},
 	}
 
@@ -218,10 +218,10 @@ func TestManifestParsing(t *testing.T) {
 
 func TestClientConcurrency(t *testing.T) {
 	client := NewClient("localhost:5000")
-	
+
 	// Test that multiple goroutines can use the client safely
 	done := make(chan bool)
-	
+
 	for i := 0; i < 10; i++ {
 		go func() {
 			ctx := context.Background()
@@ -230,7 +230,7 @@ func TestClientConcurrency(t *testing.T) {
 			done <- true
 		}()
 	}
-	
+
 	for i := 0; i < 10; i++ {
 		<-done
 	}

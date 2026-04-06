@@ -48,10 +48,10 @@ func runSync(cmd *cobra.Command, args []string) error {
 	if verifySig {
 		fmt.Printf("🔐 Verifying signature for %s...\n", image)
 		verifier := security.NewVerifier(true, []string{})
-		
+
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
-		
+
 		result, err := verifier.VerifyImage(ctx, image)
 		if err != nil || !result.Verified {
 			return fmt.Errorf("signature verification failed: image not signed or signature invalid")

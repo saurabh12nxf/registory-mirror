@@ -15,11 +15,11 @@ var tuiCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m := tui.NewModel()
 		p := tea.NewProgram(m, tea.WithAltScreen())
-		
+
 		if _, err := p.Run(); err != nil {
 			return fmt.Errorf("failed to start TUI: %w", err)
 		}
-		
+
 		return nil
 	},
 }

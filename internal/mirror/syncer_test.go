@@ -13,7 +13,7 @@ func TestSyncerStructure(t *testing.T) {
 	if syncer == nil {
 		t.Fatal("NewSyncer returned nil")
 	}
-	
+
 	if syncer.parallelism != 3 {
 		t.Errorf("Expected parallelism 3, got %d", syncer.parallelism)
 	}
@@ -24,7 +24,7 @@ func TestSyncProgressInit(t *testing.T) {
 	s := &Syncer{
 		parallelism: 1,
 	}
-	
+
 	if s == nil {
 		t.Fail()
 	}
@@ -33,7 +33,7 @@ func TestSyncProgressInit(t *testing.T) {
 func TestContextCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	
+
 	// Just verify that our context logic basically works standardly
 	if ctx.Err() != context.Canceled {
 		t.Error("Context should be canceled")

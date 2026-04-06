@@ -23,7 +23,10 @@ func init() {
 }
 
 func runHealth(cmd *cobra.Command, args []string) {
-	registry, _ := cmd.Flags().GetString("registry")
+	registry, err := cmd.Flags().GetString("registry")
+	if err != nil {
+		registry = "localhost:5000"
+	}
 
 	fmt.Println("🏥 System Health Check")
 	fmt.Println("=====================")
@@ -80,7 +83,10 @@ func checkRegistry(addr string) bool {
 	defer cancel()
 
 	url := fmt.Sprintf("http://%s/v2/", addr)
-	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return false
+	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -91,16 +97,22 @@ func checkRegistry(addr string) bool {
 }
 
 func checkDB() bool {
-	home, _ := os.UserHomeDir()
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return false
+	}
 	dbPath := filepath.Join(home, ".registry-mirror.db")
-	_, err := os.Stat(dbPath)
+	_, err = os.Stat(dbPath)
 	return err == nil || os.IsNotExist(err) // It's fine if it doesn't exist yet, it's writable
 }
 
 func checkStorage() bool {
-	dir, _ := os.Getwd()
+	dir, err := os.Getwd()
+	if err != nil {
+		return false
+	}
 	tmpFile := filepath.Join(dir, ".health_check")
-	err := os.WriteFile(tmpFile, []byte("test"), 0644)
+	err = os.WriteFile(tmpFile, []byte("test"), 0644)
 	if err != nil {
 		return false
 	}
@@ -112,7 +124,10 @@ func checkInternet() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	req, _ := http.NewRequestWithContext(ctx, "GET", "https://registry-1.docker.io/v2/", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://registry-1.docker.io/v2/", nil)
+	if err != nil {
+		return false
+	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return false

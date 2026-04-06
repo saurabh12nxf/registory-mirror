@@ -24,6 +24,7 @@ type Verifier struct {
 	trustedKeys      []string
 }
 
+// NewVerifier creates a new signature verifier with the given configuration
 func NewVerifier(requireSignature bool, trustedKeys []string) *Verifier {
 	return &Verifier{
 		requireSignature: requireSignature,

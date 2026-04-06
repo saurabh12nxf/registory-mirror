@@ -87,7 +87,7 @@ func (m Model) renderHeader() string {
 
 	title := titleStyle.Render("🐳 Registry Mirror TUI")
 	tabBar := strings.Join(renderedTabs, "  ")
-	
+
 	return fmt.Sprintf("%s\n%s", title, tabBar)
 }
 
@@ -215,14 +215,14 @@ func (m Model) renderRecentActivity(limit int) string {
 
 	for i := 0; i < count; i++ {
 		img := m.images[i]
-		
+
 		status := successStyle.Render("✅ " + img.Status)
 		if img.Status != "completed" {
 			status = errorStyle.Render("❌ " + img.Status)
 		}
 
 		timeAgo := formatTimeAgo(img.Timestamp)
-		
+
 		line := fmt.Sprintf("%s | %s | %s | %s",
 			img.Image,
 			status,
@@ -263,7 +263,7 @@ func formatBytes(bytes int64) string {
 
 func formatTimeAgo(t time.Time) string {
 	duration := time.Since(t)
-	
+
 	if duration < time.Minute {
 		return fmt.Sprintf("%ds ago", int(duration.Seconds()))
 	} else if duration < time.Hour {

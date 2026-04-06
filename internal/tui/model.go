@@ -17,15 +17,15 @@ const (
 )
 
 type Model struct {
-	db           *storage.DB
-	currentView  viewMode
-	cursor       int
-	images       []storage.SyncRecord
-	stats        *storage.AggregatedStats
-	width        int
-	height       int
-	err          error
-	lastUpdate   time.Time
+	db          *storage.DB
+	currentView viewMode
+	cursor      int
+	images      []storage.SyncRecord
+	stats       *storage.AggregatedStats
+	width       int
+	height      int
+	err         error
+	lastUpdate  time.Time
 }
 
 type tickMsg time.Time
@@ -33,6 +33,7 @@ type imagesMsg []storage.SyncRecord
 type statsMsg *storage.AggregatedStats
 type errMsg error
 
+// NewModel creates a new TUI model with database connection
 func NewModel() Model {
 	db, err := storage.NewDB()
 	if err != nil {

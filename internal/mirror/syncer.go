@@ -25,6 +25,7 @@ type SyncProgress struct {
 	StartTime    time.Time
 }
 
+// NewSyncer creates a new image syncer with the specified local registry and parallelism
 func NewSyncer(localRegistry string, parallelism int) *Syncer {
 	return &Syncer{
 		localRegistry: localRegistry,

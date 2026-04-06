@@ -28,6 +28,7 @@ type Layer struct {
 	Digest    string `json:"digest"`
 }
 
+// NewClient creates a new registry client for the given registry URL
 func NewClient(registryURL string) *Client {
 	return &Client{
 		baseURL:    registryURL,
@@ -39,14 +40,14 @@ func NewClient(registryURL string) *Client {
 func (c *Client) getDockerHubToken(ctx context.Context, image string) (string, error) {
 	parts := strings.Split(image, ":")
 	name := parts[0]
-	
+
 	// Add library/ prefix for official images without namespace
 	if !strings.Contains(name, "/") {
 		name = "library/" + name
 	}
 
 	tokenURL := fmt.Sprintf("https://auth.docker.io/token?service=registry.docker.io&scope=repository:%s:pull", name)
-	
+
 	req, err := http.NewRequestWithContext(ctx, "GET", tokenURL, nil)
 	if err != nil {
 		return "", err

@@ -18,7 +18,7 @@ func setupTestDB(t *testing.T) (*DB, func()) {
 	if originalHome == "" {
 		originalHome = os.Getenv("USERPROFILE") // Windows fallback
 	}
-	
+
 	// Set both HOME and USERPROFILE for cross-platform support
 	os.Setenv("HOME", tmpDir)
 	os.Setenv("USERPROFILE", tmpDir)
@@ -244,8 +244,8 @@ func TestGetExpiringPolicies(t *testing.T) {
 	defer cleanup()
 
 	// Set up test data
-	db.SetCachePolicy("soon:latest", 60, "expires soon")      // 1 minute
-	db.SetCachePolicy("later:latest", 7200, "expires later")  // 2 hours
+	db.SetCachePolicy("soon:latest", 60, "expires soon")     // 1 minute
+	db.SetCachePolicy("later:latest", 7200, "expires later") // 2 hours
 	db.SetCachePolicy("expired:latest", -1, "already expired")
 
 	policies, err := db.GetExpiringPolicies(5 * time.Minute)

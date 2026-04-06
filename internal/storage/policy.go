@@ -7,13 +7,13 @@ import (
 )
 
 type CachePolicy struct {
-	ID         int
-	Image      string
-	TTL        int64 // seconds
-	ExpiresAt  time.Time
-	CreatedAt  time.Time
-	CreatedBy  string
-	Reason     string
+	ID        int
+	Image     string
+	TTL       int64 // seconds
+	ExpiresAt time.Time
+	CreatedAt time.Time
+	CreatedBy string
+	Reason    string
 }
 
 type PolicyAuditLog struct {
@@ -60,7 +60,7 @@ func (db *DB) InitPolicySchema() error {
 // SetCachePolicy sets a TTL-based policy for an image
 func (db *DB) SetCachePolicy(image string, ttlSeconds int64, reason string) error {
 	expiresAt := time.Now().Add(time.Duration(ttlSeconds) * time.Second)
-	
+
 	// Insert or replace policy
 	query := `INSERT OR REPLACE INTO cache_policies (image, ttl, expires_at, reason) VALUES (?, ?, ?, ?)`
 	_, err := db.conn.Exec(query, image, ttlSeconds, expiresAt, reason)
@@ -76,19 +76,19 @@ func (db *DB) SetCachePolicy(image string, ttlSeconds int64, reason string) erro
 func (db *DB) GetCachePolicy(image string) (*CachePolicy, error) {
 	query := `SELECT id, image, ttl, expires_at, created_at, created_by, reason 
 	          FROM cache_policies WHERE image = ?`
-	
+
 	row := db.conn.QueryRow(query, image)
 	var policy CachePolicy
-	err := row.Scan(&policy.ID, &policy.Image, &policy.TTL, &policy.ExpiresAt, 
-	               &policy.CreatedAt, &policy.CreatedBy, &policy.Reason)
-	
+	err := row.Scan(&policy.ID, &policy.Image, &policy.TTL, &policy.ExpiresAt,
+		&policy.CreatedAt, &policy.CreatedBy, &policy.Reason)
+
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &policy, nil
 }
 
@@ -98,11 +98,11 @@ func (db *DB) IsImageExpired(image string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	
+
 	if policy == nil {
 		return false, nil // No policy means no expiration
 	}
-	
+
 	return time.Now().After(policy.ExpiresAt), nil
 }
 
@@ -121,11 +121,11 @@ func (db *DB) CleanupExpiredPolicies() (int, error) {
 		var image, reason string
 		var ttl int64
 		var expiresAt time.Time
-		
+
 		if err := rows.Scan(&image, &ttl, &expiresAt, &reason); err != nil {
 			continue
 		}
-		
+
 		// Log expiration
 		db.logPolicyAction(image, "expired", ttl, expiresAt, reason)
 		count++
@@ -144,12 +144,12 @@ func (db *DB) CleanupExpiredPolicies() (int, error) {
 // GetExpiringPolicies returns policies expiring within the given duration
 func (db *DB) GetExpiringPolicies(within time.Duration) ([]CachePolicy, error) {
 	expiryThreshold := time.Now().Add(within)
-	
+
 	query := `SELECT id, image, ttl, expires_at, created_at, created_by, reason 
 	          FROM cache_policies 
 	          WHERE expires_at > ? AND expires_at < ?
 	          ORDER BY expires_at ASC`
-	
+
 	rows, err := db.conn.Query(query, time.Now(), expiryThreshold)
 	if err != nil {
 		return nil, err
@@ -164,7 +164,7 @@ func (db *DB) GetExpiringPolicies(within time.Duration) ([]CachePolicy, error) {
 		}
 		policies = append(policies, p)
 	}
-	
+
 	return policies, nil
 }
 
@@ -196,7 +196,7 @@ func (db *DB) GetPolicyAuditLog(limit int) ([]PolicyAuditLog, error) {
 	          FROM policy_audit_log 
 	          ORDER BY timestamp DESC 
 	          LIMIT ?`
-	
+
 	rows, err := db.conn.Query(query, limit)
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func (db *DB) GetPolicyAuditLog(limit int) ([]PolicyAuditLog, error) {
 		}
 		logs = append(logs, log)
 	}
-	
+
 	return logs, nil
 }
 
@@ -228,7 +228,7 @@ func (db *DB) GetAllActivePolicies() ([]CachePolicy, error) {
 	          FROM cache_policies 
 	          WHERE expires_at > ?
 	          ORDER BY expires_at ASC`
-	
+
 	rows, err := db.conn.Query(query, time.Now())
 	if err != nil {
 		return nil, err
@@ -243,6 +243,6 @@ func (db *DB) GetAllActivePolicies() ([]CachePolicy, error) {
 		}
 		policies = append(policies, p)
 	}
-	
+
 	return policies, nil
 }

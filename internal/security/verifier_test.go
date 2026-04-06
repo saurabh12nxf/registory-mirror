@@ -91,7 +91,7 @@ func TestVerifyImage(t *testing.T) {
 
 func TestVerifyImageWithTimeout(t *testing.T) {
 	verifier := NewVerifier(false, []string{})
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
@@ -137,11 +137,11 @@ func TestVerifyBatchWithSignatureRequired(t *testing.T) {
 
 	images := []string{
 		"gcr.io/distroless/static:latest", // Should pass
-		"nginx:latest",                     // Should fail
+		"nginx:latest",                    // Should fail
 	}
 
 	results, err := verifier.VerifyBatch(ctx, images)
-	
+
 	// Should have error because one image failed
 	if err == nil {
 		t.Error("expected error for batch with failed verification")

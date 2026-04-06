@@ -21,6 +21,7 @@ this tool reduces pull times from minutes to seconds by maintaining
 a smart local cache of frequently-used images.`,
 }
 
+// Execute runs the root command
 func Execute() error {
 	return rootCmd.Execute()
 }

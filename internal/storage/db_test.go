@@ -258,7 +258,7 @@ func TestDatabaseConcurrency(t *testing.T) {
 	numGoroutines := 10
 	errors := make(chan error, numGoroutines)
 	results := make(chan int, numGoroutines)
-	
+
 	for i := 0; i < numGoroutines; i++ {
 		go func() {
 			records, err := db.GetRecentSyncs(20)
@@ -292,7 +292,7 @@ func TestDatabaseConcurrency(t *testing.T) {
 
 func TestDatabaseClose(t *testing.T) {
 	db, cleanup := setupTestDB(t)
-	
+
 	err := db.Close()
 	if err != nil {
 		t.Errorf("Close() error = %v", err)

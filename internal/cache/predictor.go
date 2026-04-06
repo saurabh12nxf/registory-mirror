@@ -8,6 +8,7 @@ type Predictor struct {
 	db *storage.DB
 }
 
+// NewPredictor creates a new cache predictor with database connection
 func NewPredictor(db *storage.DB) *Predictor {
 	return &Predictor{db: db}
 }

@@ -10,6 +10,7 @@ type Analyzer struct {
 	db *storage.DB
 }
 
+// NewAnalyzer creates a new analytics analyzer with database connection
 func NewAnalyzer(db *storage.DB) *Analyzer {
 	return &Analyzer{db: db}
 }

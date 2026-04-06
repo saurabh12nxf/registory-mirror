@@ -23,6 +23,7 @@ type SyncRecord struct {
 	Timestamp time.Time
 }
 
+// NewDB creates a new database connection and initializes the schema
 func NewDB() (*DB, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {

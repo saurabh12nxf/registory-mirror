@@ -19,6 +19,7 @@ type Manager struct {
 	policy  PolicyType
 }
 
+// NewManager creates a new cache manager with the specified size limit and policy
 func NewManager(db *storage.DB, maxSizeMB int64, policy PolicyType) *Manager {
 	return &Manager{
 		db:      db,
