@@ -1,13 +1,19 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/saurabh12nxf/registry-mirror/internal/cache"
 	"github.com/saurabh12nxf/registry-mirror/internal/mirror"
+	"github.com/saurabh12nxf/registry-mirror/internal/security"
 	"github.com/saurabh12nxf/registry-mirror/internal/storage"
 	"github.com/spf13/cobra"
+)
+
+var (
+	verifySig bool
 )
 
 var syncCmd = &cobra.Command{
@@ -18,7 +24,8 @@ var syncCmd = &cobra.Command{
 Examples:
   registry-mirror sync nginx:latest
   registry-mirror sync tensorflow/tensorflow:2.11.0
-  registry-mirror sync postgres:15-alpine`,
+  registry-mirror sync postgres:15-alpine
+  registry-mirror sync nginx:latest --verify-signature`,
 	Args: cobra.ExactArgs(1),
 	RunE: runSync,
 }
@@ -28,6 +35,7 @@ func init() {
 
 	syncCmd.Flags().BoolP("force", "f", false, "force re-sync even if image exists")
 	syncCmd.Flags().Int("parallel", 3, "number of parallel layer downloads")
+	syncCmd.Flags().BoolVar(&verifySig, "verify-signature", false, "verify image signature before syncing")
 }
 
 func runSync(cmd *cobra.Command, args []string) error {
@@ -35,6 +43,21 @@ func runSync(cmd *cobra.Command, args []string) error {
 	force, _ := cmd.Flags().GetBool("force")
 	parallel, _ := cmd.Flags().GetInt("parallel")
 	registry, _ := cmd.Flags().GetString("registry")
+
+	// Verify signature if requested
+	if verifySig {
+		fmt.Printf("🔐 Verifying signature for %s...\n", image)
+		verifier := security.NewVerifier(true, []string{})
+		
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		
+		result, err := verifier.VerifyImage(ctx, image)
+		if err != nil || !result.Verified {
+			return fmt.Errorf("signature verification failed: image not signed or signature invalid")
+		}
+		fmt.Println("✅ Signature verified")
+	}
 
 	fmt.Printf("🔄 Syncing %s to %s...\n", image, registry)
 

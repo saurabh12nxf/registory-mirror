@@ -1,0 +1,49 @@
+# Binaries
+registry-mirror
+registry-mirror.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.out
+coverage.html
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+.registry-mirror.db
+
+# Config files (keep example)
+.registry-mirror.yaml
+
+# Test artifacts
+test-repo/
+test-bom.md
+*-bom.md
+
+# Temporary files
+tmp/
+temp/
+*.tmp

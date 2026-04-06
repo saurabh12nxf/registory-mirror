@@ -12,6 +12,7 @@ import (
 type Client struct {
 	baseURL    string
 	httpClient *http.Client
+	token      string
 }
 
 type Manifest struct {
@@ -34,6 +35,43 @@ func NewClient(registryURL string) *Client {
 	}
 }
 
+// getDockerHubToken obtains an authentication token from Docker Hub
+func (c *Client) getDockerHubToken(ctx context.Context, image string) (string, error) {
+	parts := strings.Split(image, ":")
+	name := parts[0]
+	
+	// Add library/ prefix for official images without namespace
+	if !strings.Contains(name, "/") {
+		name = "library/" + name
+	}
+
+	tokenURL := fmt.Sprintf("https://auth.docker.io/token?service=registry.docker.io&scope=repository:%s:pull", name)
+	
+	req, err := http.NewRequestWithContext(ctx, "GET", tokenURL, nil)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to get token: status %d", resp.StatusCode)
+	}
+
+	var tokenResp struct {
+		Token string `json:"token"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
+		return "", err
+	}
+
+	return tokenResp.Token, nil
+}
+
 // GetManifest fetches the image manifest from the registry
 func (c *Client) GetManifest(ctx context.Context, image string) (*Manifest, error) {
 	parts := strings.Split(image, ":")
@@ -41,6 +79,17 @@ func (c *Client) GetManifest(ctx context.Context, image string) (*Manifest, erro
 	tag := "latest"
 	if len(parts) > 1 {
 		tag = parts[1]
+	}
+
+	// Add library/ prefix for official images
+	if !strings.Contains(name, "/") {
+		name = "library/" + name
+	}
+
+	// Get authentication token
+	token, err := c.getDockerHubToken(ctx, image)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get auth token: %w", err)
 	}
 
 	url := fmt.Sprintf("https://registry-1.docker.io/v2/%s/manifests/%s", name, tag)
@@ -51,6 +100,7 @@ func (c *Client) GetManifest(ctx context.Context, image string) (*Manifest, erro
 	}
 
 	req.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -76,12 +126,25 @@ func (c *Client) PullLayer(ctx context.Context, image, digest string) (io.ReadCl
 	parts := strings.Split(image, ":")
 	name := parts[0]
 
+	// Add library/ prefix for official images
+	if !strings.Contains(name, "/") {
+		name = "library/" + name
+	}
+
+	// Get authentication token
+	token, err := c.getDockerHubToken(ctx, image)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get auth token: %w", err)
+	}
+
 	url := fmt.Sprintf("https://registry-1.docker.io/v2/%s/blobs/%s", name, digest)
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

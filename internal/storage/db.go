@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3" // SQLite driver
+	_ "modernc.org/sqlite" // Pure Go SQLite driver
 )
 
 type DB struct {
@@ -30,7 +30,7 @@ func NewDB() (*DB, error) {
 	}
 
 	dbPath := filepath.Join(home, ".registry-mirror.db")
-	db, err := sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("sqlite", dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
@@ -40,7 +40,14 @@ func NewDB() (*DB, error) {
 		return nil, err
 	}
 
-	return &DB{conn: db}, nil
+	// Initialize policy schema
+	dbInstance := &DB{conn: db}
+	if err := dbInstance.InitPolicySchema(); err != nil {
+		db.Close()
+		return nil, err
+	}
+
+	return dbInstance, nil
 }
 
 func initSchema(db *sql.DB) error {
