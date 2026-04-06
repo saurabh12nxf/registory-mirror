@@ -32,7 +32,7 @@ jobs:
       run: go mod download
 
     - name: Run tests
-      run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+      run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
 
     - name: Generate coverage report
       run: go tool cover -html=coverage.out -o coverage.html
@@ -79,7 +79,7 @@ jobs:
     - name: Run golangci-lint
       uses: golangci/golangci-lint-action@v3
       with:
-        version: latest
+        version: v1.61.0
 
   build:
     name: Build

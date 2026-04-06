@@ -1,6 +1,6 @@
 module github.com/saurabh12nxf/registry-mirror
 
-go 1.25.4
+go 1.23.0
 
 require (
 	github.com/charmbracelet/bubbletea v0.25.0
