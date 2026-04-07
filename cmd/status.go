@@ -6,8 +6,9 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/saurabh12nxf/registry-mirror/internal/storage"
 	"github.com/spf13/cobra"
+
+	"github.com/saurabh12nxf/registry-mirror/internal/storage"
 )
 
 var statusCmd = &cobra.Command{

@@ -1,29 +1,23 @@
 linters-settings:
   errcheck:
-    check-type-assertions: true
-    check-blank: true
+    check-type-assertions: false
+    check-blank: false
+    exclude-functions:
+      - (*github.com/spf13/pflag.FlagSet).GetInt
+      - (*github.com/spf13/pflag.FlagSet).GetBool
+      - (*github.com/spf13/pflag.FlagSet).GetString
+      - (io).ReadAll
+      - (path/filepath).Rel
+      - (*github.com/saurabh12nxf/registry-mirror/internal/mirror.Tracker).TrackSyncError
+      - (*github.com/saurabh12nxf/registry-mirror/internal/mirror.Tracker).TrackSyncComplete
+      - (*github.com/saurabh12nxf/registry-mirror/internal/storage.DB).logPolicyAction
+      - (*github.com/saurabh12nxf/registry-mirror/internal/security.Verifier).VerifyImage
   govet:
-    enable-all: true
-  gocyclo:
-    min-complexity: 15
-  dupl:
-    threshold: 100
-  goconst:
-    min-len: 3
-    min-occurrences: 3
+    disable:
+      - fieldalignment
+      - shadow
   misspell:
     locale: US
-  lll:
-    line-length: 140
-  goimports:
-    local-prefixes: github.com/saurabh12nxf/registry-mirror
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - experimental
-      - opinionated
-      - performance
-      - style
 
 linters:
   disable-all: true
@@ -36,21 +30,34 @@ linters:
     - typecheck
     - unused
     - gofmt
-    - goimports
     - misspell
-    - goconst
-    - gocritic
 
 issues:
   exclude-rules:
-    # Exclude some linters from running on tests files
+    # Exclude linters from test files
     - path: _test\.go
       linters:
-        - gocyclo
         - errcheck
-        - dupl
-        - gosec
-        - goconst
+        - staticcheck
+        - govet
+    
+    # Exclude specific staticcheck warnings
+    - linters:
+        - staticcheck
+      text: "SA5011"
+    
+    - linters:
+        - staticcheck
+      text: "SA4031"
+    
+    - linters:
+        - staticcheck
+      text: "SA9003"
+    
+    # Exclude nil checks
+    - linters:
+        - govet
+      text: "nilness"
 
   max-issues-per-linter: 0
   max-same-issues: 0

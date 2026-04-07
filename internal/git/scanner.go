@@ -92,7 +92,7 @@ func (s *Scanner) scanDockerfile(path string) ([]ImageReference, error) {
 	lineNum := 0
 
 	// Regex for FROM instruction
-	fromRegex := regexp.MustCompile(`(?i)^FROM\s+(?:--platform=[^\s]+\s+)?([^\s]+)`)
+	fromRegex := regexp.MustCompile(`(?i)^FROM\s+(?:--platform=\S+\s+)?(\S+)`)
 
 	for scanner.Scan() {
 		lineNum++

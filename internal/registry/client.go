@@ -12,7 +12,6 @@ import (
 type Client struct {
 	baseURL    string
 	httpClient *http.Client
-	token      string
 }
 
 type Manifest struct {

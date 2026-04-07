@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/saurabh12nxf/registry-mirror/internal/tui"
 	"github.com/spf13/cobra"
+
+	"github.com/saurabh12nxf/registry-mirror/internal/tui"
 )
 
 var tuiCmd = &cobra.Command{

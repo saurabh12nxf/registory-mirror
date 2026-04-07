@@ -3,10 +3,11 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
+
 	"github.com/saurabh12nxf/registry-mirror/internal/cache"
 	"github.com/saurabh12nxf/registry-mirror/internal/mirror"
 	"github.com/saurabh12nxf/registry-mirror/internal/storage"
-	"github.com/spf13/cobra"
 )
 
 var autoCmd = &cobra.Command{

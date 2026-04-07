@@ -5,8 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/saurabh12nxf/registry-mirror/internal/git"
 	"github.com/spf13/cobra"
+
+	"github.com/saurabh12nxf/registry-mirror/internal/git"
 )
 
 var (

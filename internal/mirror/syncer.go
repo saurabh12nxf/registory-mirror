@@ -3,7 +3,6 @@ package mirror
 import (
 	"context"
 	"fmt"
-	"io"
 	"sync"
 	"time"
 
@@ -117,10 +116,4 @@ func (s *Syncer) syncLayer(ctx context.Context, image string, layer registry.Lay
 	}
 
 	return nil
-}
-
-// Helper to copy data and track progress
-func copyWithProgress(dst io.Writer, src io.Reader, size int64) (int64, error) {
-	// Simple copy for now, can add progress bar later
-	return io.Copy(dst, src)
 }

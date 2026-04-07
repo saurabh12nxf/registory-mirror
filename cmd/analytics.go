@@ -5,9 +5,10 @@ import (
 	"os"
 	"text/tabwriter"
 
+	"github.com/spf13/cobra"
+
 	"github.com/saurabh12nxf/registry-mirror/internal/analytics"
 	"github.com/saurabh12nxf/registry-mirror/internal/storage"
-	"github.com/spf13/cobra"
 )
 
 var analyticsCmd = &cobra.Command{
